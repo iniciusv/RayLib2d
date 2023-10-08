@@ -1,50 +1,43 @@
 ﻿using Raylib_cs;
 using System.Numerics;
 
-class CameraController
+public class CameraController
 {
-	private Camera2D _camera;
+	private Camera2D camera;
 
-	public CameraController(Camera2D camera)
+	public CameraController(Vector2 target, Vector2 offset)
 	{
-		_camera = camera;
+		camera = new Camera2D
+		{
+			target = target,
+			offset = offset,
+			zoom = 1.0f,
+			rotation = 0.0f
+		};
 	}
 
-	public void HandleInput()
+	public Camera2D GetCamera() => camera;
+
+	public void Update()
 	{
-		// Translate based on mouse right click
+		// Camera control
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON))
 		{
 			Vector2 delta = Raylib.GetMouseDelta();
-			delta = Vector2.Multiply(delta, -1.0f / _camera.zoom);
-
-			_camera.target = Vector2.Add(_camera.target, delta);
+			camera.target = Vector2.Add(camera.target, Vector2.Divide(delta, -camera.zoom));
 		}
 
-		// Zoom based on mouse wheel
-		float wheel = Raylib.GetMouseWheelMove();
-		if (wheel != 0)
+		float mouseWheelMove = Raylib.GetMouseWheelMove();
+		if (mouseWheelMove != 0)
 		{
-			// Get the world point that is under the mouse
-			Vector2 mouseWorldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), _camera);
+			Vector2 mouseWorldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), camera);
+			camera.offset = Raylib.GetMousePosition();
+			camera.target = mouseWorldPos;
 
-			// Set the offset to where the mouse is
-			_camera.offset = Raylib.GetMousePosition();
-
-			// Set the target to match, so that the camera maps the world space point 
-			// under the cursor to the screen space point under the cursor at any zoom
-			_camera.target = mouseWorldPos;
-
-			// Zoom increment
 			const float zoomIncrement = 0.125f;
+			camera.zoom += mouseWheelMove * zoomIncrement;
 
-			_camera.zoom += (wheel * zoomIncrement);
-			if (_camera.zoom < zoomIncrement) _camera.zoom = zoomIncrement;
+			if (camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
 		}
-	}
-
-	public Camera2D GetCamera()
-	{
-		return _camera;
 	}
 }

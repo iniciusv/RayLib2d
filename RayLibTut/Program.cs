@@ -17,19 +17,16 @@ static class Program
 		bool isDrawing = false;
 		bool previousMouseState = false;
 
-		Camera2D camera = new Camera2D
-		{
-			target = new Vector2(screenWidth / 2, screenHeight / 2),
-			offset = new Vector2(screenWidth / 2, screenHeight / 2),
-			zoom = 1.0f,
-			rotation = 0.0f
-		};
+		CameraController cameraController = new CameraController(
+			new Vector2(screenWidth / 2, screenHeight / 2),
+			new Vector2(screenWidth / 2, screenHeight / 2)
+		);
 
 		while (!Raylib.WindowShouldClose())
 		{
 			bool currentMouseState = Raylib.IsMouseButtonReleased(MouseButton.MOUSE_LEFT_BUTTON);
 
-			Vector2 mouseWorldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), camera);
+			Vector2 mouseWorldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), cameraController.GetCamera());
 
 			if (currentMouseState && !previousMouseState)
 			{
@@ -47,29 +44,12 @@ static class Program
 
 			previousMouseState = currentMouseState;
 
-			// Camera control
-			if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON))
-			{
-				Vector2 delta = Raylib.GetMouseDelta();
-				camera.target = Vector2.Add(camera.target, Vector2.Divide(delta, -camera.zoom));
-			}
-
-			float mouseWheelMove = Raylib.GetMouseWheelMove();
-			if (mouseWheelMove != 0)
-			{
-				camera.offset = Raylib.GetMousePosition();
-				camera.target = mouseWorldPos;
-
-				const float zoomIncrement = 0.125f;
-				camera.zoom += mouseWheelMove * zoomIncrement;
-
-				if (camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
-			}
+			cameraController.Update();
 
 			Raylib.BeginDrawing();
 			Raylib.ClearBackground(Color.BLACK);
 
-			Raylib.BeginMode2D(camera);
+			Raylib.BeginMode2D(cameraController.GetCamera());
 
 			foreach (var line in lines)
 			{
