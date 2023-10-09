@@ -1,38 +1,35 @@
 ﻿using Raylib_cs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Collections.Generic;
 
 public class Drawer
 {
-	public List<(Vector2 Start, Vector2 End)> Lines { get; } = new List<(Vector2 Start, Vector2 End)>();
-
-	public void Draw(string tool, Vector2 start, Vector2 end)
-	{
-		if (tool == "Line")
-		{
-			Lines.Add((start, end));
-			Raylib.DrawText("Drawing == true", 10, 10, 20, Color.WHITE);
-		}
-
-		foreach (var line in Lines)
-		{
-			DrawLine(start, end);
-		}
-		DrawLine(start, end);
-
-	}
-	public void DrawLine(Vector2 start, Vector2 end)
-	{
-			Raylib.DrawLineV(start, end, Color.RED);
-	}
+	public List<(Vector2 Start, Vector2 End)> Lines { get; private set; } = new List<(Vector2 Start, Vector2 End)>();
+	public List<(Vector2 Center, float Radius)> Circles { get; private set; } = new List<(Vector2 Center, float Radius)>();
 
 	public void AddLine(Vector2 start, Vector2 end)
 	{
 		Lines.Add((start, end));
+	}
+
+	public void AddCircle(Vector2 center, float radius)
+	{
+		Circles.Add((center, radius));
+	}
+
+	public void DrawLines()
+	{
+		foreach (var line in Lines)
+		{
+			Raylib.DrawLineV(line.Start, line.End, Color.RED);
+		}
+	}
+
+	public void DrawCircles()
+	{
+		foreach (var circle in Circles)
+		{
+			Raylib.DrawCircleV(circle.Center, circle.Radius, Color.BLUE);
+		}
 	}
 }
