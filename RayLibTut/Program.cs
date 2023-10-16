@@ -30,6 +30,13 @@ static class Program
 
 			if (Raylib.IsKeyPressed(KeyboardKey.KEY_L)) lastKeyPressed = 'L';
 			if (Raylib.IsKeyPressed(KeyboardKey.KEY_C)) lastKeyPressed = 'C';
+			if (Raylib.IsKeyPressed(KeyboardKey.KEY_S)) lastKeyPressed = 'S';
+
+			if (currentMouseState && !previousMouseState && lastKeyPressed == 'S')
+			{
+				drawer.SelectObject(mouseWorldPos);
+			}
+
 
 			if (currentMouseState && !previousMouseState)
 			{
