@@ -66,4 +66,21 @@ public class Drawer
 		// Deselect if no object is found
 		SelectedObject = null;
 	}
+
+	public void DrawTempShapes(char lastKeyPressed, bool isDrawing, Vector2 start, Vector2 mouseWorldPos)
+	{
+		if (isDrawing)
+		{
+			if (lastKeyPressed == 'L')
+			{
+				Raylib.DrawLineV(start, mouseWorldPos, Color.RED);
+			}
+			else if (lastKeyPressed == 'C')
+			{
+				float radius = Vector2.Distance(start, mouseWorldPos);
+				Raylib.DrawCircleV(start, radius, Color.BLUE);
+			}
+		}
+	}
+
 }
