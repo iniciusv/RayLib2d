@@ -86,7 +86,6 @@ public class Drawer
 		return new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
 	}
 
-
 	public void DrawCircles()
 	{
 		foreach (var circle in Circles)
@@ -155,37 +154,6 @@ public class Drawer
 		SelectedObject = null;
 	}
 
-	public void MoveLineEndpoint(Vector2 newPoint)
-	{
-		if (SelectedObject is ValueTuple<Vector2, Vector2> selectedLineTuple && SelectedEndpoint != Endpoint.None)
-		{
-			var (Start, End) = selectedLineTuple;
-
-			switch (SelectedEndpoint)
-			{
-				case Endpoint.Start:
-					Start = newPoint;
-					break;
-				case Endpoint.End:
-					End = newPoint;
-					break;
-				case Endpoint.Middle:
-					Vector2 midPoint = GetMidPoint(Start, End);
-					Vector2 delta = newPoint - midPoint;
-					Start += delta;
-					End += delta;
-					break;
-			}
-
-			// Atualizar a linha na lista
-			Lines.Remove((Start, End));  // Remova a antiga
-			Lines.Add((Start, End));     // Adicione a atualizada
-
-			SelectedObject = (Start, End); // Atualize o objeto selecionado
-		}
-	}
-
-
 	public void DrawTempShapes(char lastKeyPressed, bool isDrawing, Vector2 start, Vector2 mouseWorldPos)
 	{
 		if (isDrawing)
@@ -230,6 +198,5 @@ public class Drawer
 			SelectedObject = updatedLine;  // Atualize o objeto selecionado para a nova linha
 		}
 	}
-
 
 }
