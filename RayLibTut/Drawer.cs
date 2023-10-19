@@ -27,19 +27,41 @@ public class Drawer
 				// Desenhe a linha tracejada quando estiver selecionada
 				DrawDashedLine(line.Start, line.End, color);
 
-				// Desenhe quadrados nas extremidades
-				Raylib.DrawRectangleV(new Vector2(line.Start.X - 5, line.Start.Y - 5), new Vector2(10, 10), Color.GREEN);
-				Raylib.DrawRectangleV(new Vector2(line.End.X - 5, line.End.Y - 5), new Vector2(10, 10), Color.GREEN);
+				float angle = GetAngleBetweenPoints(line.Start, line.End);
 
-				// Desenhe um retângulo no ponto médio
+				// Desenhe quadrados rotacionados nas extremidades
+				DrawRotatedSquare(line.Start, 10, angle, Color.GREEN);
+				DrawRotatedSquare(line.End, 10, angle, Color.GREEN);
+
+				// Desenhe um retângulo rotacionado no ponto médio
 				Vector2 midPoint = GetMidPoint(line.Start, line.End);
-				Raylib.DrawRectangleV(new Vector2(midPoint.X - 5, midPoint.Y - 2), new Vector2(10, 5), Color.GREEN);
+				DrawRotatedSquare(midPoint, 10, angle, Color.GREEN);
+
 			}
 			else
 			{
 				Raylib.DrawLineV(line.Start, line.End, color);
 			}
 		}
+	}
+
+
+	private void DrawRotatedSquare(Vector2 center, float sideLength, float angle, Color color)
+	{
+		float halfDiagonal = sideLength * (float)Math.Sqrt(2) / 2;
+
+		Vector2 topRight = center + new Vector2(halfDiagonal * (float)Math.Cos(angle + Math.PI / 4), halfDiagonal * (float)Math.Sin(angle + Math.PI / 4));
+		Vector2 topLeft = center + new Vector2(halfDiagonal * (float)Math.Cos(angle + 3 * Math.PI / 4), halfDiagonal * (float)Math.Sin(angle + 3 * Math.PI / 4));
+		Vector2 bottomLeft = center + new Vector2(halfDiagonal * (float)Math.Cos(angle + 5 * Math.PI / 4), halfDiagonal * (float)Math.Sin(angle + 5 * Math.PI / 4));
+		Vector2 bottomRight = center + new Vector2(halfDiagonal * (float)Math.Cos(angle + 7 * Math.PI / 4), halfDiagonal * (float)Math.Sin(angle + 7 * Math.PI / 4));
+
+		Raylib.DrawTriangle(topLeft, topRight, bottomRight, color);
+		Raylib.DrawTriangle(bottomRight, bottomLeft, topLeft, color);
+	}
+
+	private float GetAngleBetweenPoints(Vector2 pointA, Vector2 pointB)
+	{
+		return (float)Math.Atan2(pointB.Y - pointA.Y, pointB.X - pointA.X);
 	}
 
 
