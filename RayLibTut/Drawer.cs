@@ -5,6 +5,9 @@ public class Drawer
 {
 	public List<(Vector2 Start, Vector2 End)> Lines { get; private set; } = new List<(Vector2 Start, Vector2 End)>();
 	public List<(Vector2 Center, float Radius)> Circles { get; private set; } = new List<(Vector2 Center, float Radius)>();
+	public enum Endpoint { None, Start, Middle, End }
+	public Endpoint SelectedEndpoint { get; private set; } = Endpoint.None;
+
 	public object SelectedObject { get; private set; }
 
 	public void AddLine(Vector2 start, Vector2 end)
@@ -21,30 +24,30 @@ public class Drawer
 	{
 		foreach (var line in Lines)
 		{
-			Color color = line.Equals(SelectedObject) ? Color.BLUE : Color.RED;
+			Color lineColor = line.Equals(SelectedObject) ? Color.BLUE : Color.RED;
 			if (line.Equals(SelectedObject))
 			{
 				// Desenhe a linha tracejada quando estiver selecionada
-				DrawDashedLine(line.Start, line.End, color);
+				DrawDashedLine(line.Start, line.End, lineColor);
 
 				float angle = GetAngleBetweenPoints(line.Start, line.End);
 
 				// Desenhe quadrados rotacionados nas extremidades
-				DrawRotatedSquare(line.Start, 10, angle, Color.GREEN);
-				DrawRotatedSquare(line.End, 10, angle, Color.GREEN);
+				Color startSquareColor = (SelectedEndpoint == Endpoint.Start) ? Color.BLUE : Color.GREEN;
+				Color endSquareColor = (SelectedEndpoint == Endpoint.End) ? Color.BLUE : Color.GREEN;
+				Color midSquareColor = (SelectedEndpoint == Endpoint.Middle) ? Color.BLUE : Color.GREEN;
 
-				// Desenhe um retângulo rotacionado no ponto médio
+				DrawRotatedSquare(line.Start, 10, angle, startSquareColor);
+				DrawRotatedSquare(line.End, 10, angle, endSquareColor);
 				Vector2 midPoint = GetMidPoint(line.Start, line.End);
-				DrawRotatedSquare(midPoint, 10, angle, Color.GREEN);
-
+				DrawRotatedSquare(midPoint, 10, angle, midSquareColor);
 			}
 			else
 			{
-				Raylib.DrawLineV(line.Start, line.End, color);
+				Raylib.DrawLineV(line.Start, line.End, lineColor);
 			}
 		}
 	}
-
 
 	private void DrawRotatedSquare(Vector2 center, float sideLength, float angle, Color color)
 	{
@@ -95,6 +98,33 @@ public class Drawer
 
 	public void SelectObject(Vector2 point)
 	{
+		SelectedEndpoint = Endpoint.None; // Reset para nenhum ponto de extremidade selecionado
+
+		// Se já temos uma linha selecionada, verifique se um dos quadrados foi clicado
+		if (SelectedObject is ValueTuple<Vector2, Vector2> selectedLine)
+		{
+			float squareSize = 10; // O tamanho dos quadrados
+			if (Vector2.Distance(point, selectedLine.Item1) <= squareSize)
+			{
+				SelectedEndpoint = Endpoint.Start;
+				return;
+			}
+			else if (Vector2.Distance(point, selectedLine.Item2) <= squareSize)
+			{
+				SelectedEndpoint = Endpoint.End;
+				return;
+			}
+			else
+			{
+				Vector2 midPoint = GetMidPoint(selectedLine.Item1, selectedLine.Item2);
+				if (Vector2.Distance(point, midPoint) <= squareSize)
+				{
+					SelectedEndpoint = Endpoint.Middle;
+					return;
+				}
+			}
+		}
+
 		// Check for circles first
 		foreach (var circle in Circles)
 		{
@@ -125,6 +155,37 @@ public class Drawer
 		SelectedObject = null;
 	}
 
+	public void MoveLineEndpoint(Vector2 newPoint)
+	{
+		if (SelectedObject is ValueTuple<Vector2, Vector2> selectedLineTuple && SelectedEndpoint != Endpoint.None)
+		{
+			var (Start, End) = selectedLineTuple;
+
+			switch (SelectedEndpoint)
+			{
+				case Endpoint.Start:
+					Start = newPoint;
+					break;
+				case Endpoint.End:
+					End = newPoint;
+					break;
+				case Endpoint.Middle:
+					Vector2 midPoint = GetMidPoint(Start, End);
+					Vector2 delta = newPoint - midPoint;
+					Start += delta;
+					End += delta;
+					break;
+			}
+
+			// Atualizar a linha na lista
+			Lines.Remove((Start, End));  // Remova a antiga
+			Lines.Add((Start, End));     // Adicione a atualizada
+
+			SelectedObject = (Start, End); // Atualize o objeto selecionado
+		}
+	}
+
+
 	public void DrawTempShapes(char lastKeyPressed, bool isDrawing, Vector2 start, Vector2 mouseWorldPos)
 	{
 		if (isDrawing)
@@ -140,5 +201,35 @@ public class Drawer
 			}
 		}
 	}
+
+	public void MoveSelectedEndpoint(Vector2 newPosition)
+	{
+		if (SelectedObject is ValueTuple<Vector2, Vector2> selectedLine && SelectedEndpoint != Endpoint.None)
+		{
+			var updatedLine = selectedLine;
+
+			switch (SelectedEndpoint)
+			{
+				case Endpoint.Start:
+					updatedLine.Item1 = newPosition;
+					break;
+				case Endpoint.Middle:
+					Vector2 middle = GetMidPoint(selectedLine.Item1, selectedLine.Item2);
+					Vector2 delta = newPosition - middle;
+					updatedLine.Item1 += delta;
+					updatedLine.Item2 += delta;
+					break;
+				case Endpoint.End:
+					updatedLine.Item2 = newPosition;
+					break;
+			}
+
+			// Atualize a linha na lista
+			Lines.Remove(selectedLine);
+			Lines.Add(updatedLine);
+			SelectedObject = updatedLine;  // Atualize o objeto selecionado para a nova linha
+		}
+	}
+
 
 }

@@ -11,6 +11,8 @@ namespace RayLib2d
 		private CameraController cameraController;
 		private Drawer drawer;
 
+		private bool isDraggingEndpoint = false;
+
 		// Propriedades públicas para expor os valores necessários:
 		public char LastKeyPressed { get; private set; } = 'L';
 		public bool IsDrawing { get => isDrawing; }
@@ -38,10 +40,24 @@ namespace RayLib2d
 			if (Raylib.IsKeyPressed(KeyboardKey.KEY_C)) LastKeyPressed = 'C';
 			if (Raylib.IsKeyPressed(KeyboardKey.KEY_S)) LastKeyPressed = 'S';
 
-
 			if (currentMouseState && !previousMouseState && LastKeyPressed == 'S')
 			{
 				drawer.SelectObject(mouseWorldPos);
+			}
+
+			// Verificar se o botão esquerdo do mouse está pressionado e se algum quadrado de um vértice da linha foi selecionado.
+			if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON) && drawer.SelectedEndpoint != Drawer.Endpoint.None)
+			{
+				isDraggingEndpoint = true;
+			}
+			else if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_LEFT_BUTTON))
+			{
+				isDraggingEndpoint = false;
+			}
+
+			if (isDraggingEndpoint)
+			{
+				drawer.MoveSelectedEndpoint(mouseWorldPos);
 			}
 
 			if (currentMouseState && !previousMouseState)
@@ -78,6 +94,7 @@ namespace RayLib2d
 			previousMouseState = currentMouseState;
 			cameraController.Update();
 		}
+
 	}
 
 }
