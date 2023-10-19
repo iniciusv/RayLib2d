@@ -22,9 +22,45 @@ public class Drawer
 		foreach (var line in Lines)
 		{
 			Color color = line.Equals(SelectedObject) ? Color.BLUE : Color.RED;
-			Raylib.DrawLineV(line.Start, line.End, color);
+			if (line.Equals(SelectedObject))
+			{
+				// Desenhe a linha tracejada quando estiver selecionada
+				DrawDashedLine(line.Start, line.End, color);
+
+				// Desenhe quadrados nas extremidades
+				Raylib.DrawRectangleV(new Vector2(line.Start.X - 5, line.Start.Y - 5), new Vector2(10, 10), Color.GREEN);
+				Raylib.DrawRectangleV(new Vector2(line.End.X - 5, line.End.Y - 5), new Vector2(10, 10), Color.GREEN);
+
+				// Desenhe um retângulo no ponto médio
+				Vector2 midPoint = GetMidPoint(line.Start, line.End);
+				Raylib.DrawRectangleV(new Vector2(midPoint.X - 5, midPoint.Y - 2), new Vector2(10, 5), Color.GREEN);
+			}
+			else
+			{
+				Raylib.DrawLineV(line.Start, line.End, color);
+			}
 		}
 	}
+
+
+	private void DrawDashedLine(Vector2 start, Vector2 end, Color color)
+	{
+		float distance = Vector2.Distance(start, end);
+		int segments = (int)distance / 10; // Ajuste esse valor conforme desejado
+
+		for (int i = 0; i < segments; i++)
+		{
+			Vector2 startPoint = Vector2.Lerp(start, end, (float)i / segments);
+			Vector2 endPoint = Vector2.Lerp(start, end, (float)(i + 0.5) / segments); // 0.5 define o tamanho do segmento
+			Raylib.DrawLineV(startPoint, endPoint, color);
+		}
+	}
+
+	private Vector2 GetMidPoint(Vector2 pointA, Vector2 pointB)
+	{
+		return new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
+	}
+
 
 	public void DrawCircles()
 	{
