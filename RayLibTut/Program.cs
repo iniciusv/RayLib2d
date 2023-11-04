@@ -16,24 +16,28 @@ static class Program
 		Vector2 cameraOffset = new Vector2(screenWidth / 2.0f, screenHeight / 2.0f);
 		InputHandler inputHandler = new InputHandler(cameraTarget, cameraOffset);
 
-		Drawer drawer = new Drawer();
+		char lastKeyPressed = ' ';
+		bool FirstClick = false;
+		Vector2 FirstClickCoordinates;
+
+	Drawer drawer = new Drawer();
 
 		while (!Raylib.WindowShouldClose()) // Main game loop
 		{
 			// Update
-			var LastKeyPressed = inputHandler.Update();
+			inputHandler.Update();
 
 			// Draw
-			drawer.Update(LastKeyPressed);
 
 			Raylib.BeginDrawing();
-			Raylib.ClearBackground(Color.RAYWHITE);
+			Raylib.ClearBackground(Color.BLACK);
 
 			Raylib.BeginMode2D(inputHandler.GetCamera());
+			drawer.Update(inputHandler);
 			Draw2DSpace();
 			Raylib.EndMode2D();
 
-			Raylib.DrawText($"Last key pressed: {inputHandler.GetLastKeyPressed()}", 10, 10, 20, Color.BLACK);
+			Raylib.DrawText($"Last key pressed: {inputHandler.GetLastKeyPressed()}, FirstClick: {inputHandler.GetFirstClick()}", 10, 10, 20, Color.WHITE);
 
 			Raylib.EndDrawing();
 		}

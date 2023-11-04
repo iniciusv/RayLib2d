@@ -3,8 +3,9 @@ using System.Numerics;
 
 public class InputHandler
 {
-	private char lastKeyPressed = ' ';
-	private bool MouseDirButton = false;
+	public char LastKeyPressed = ' ';
+	public bool FirstClick = false;
+	public Vector2 FirstClickCoordinates;
 	private CameraController cameraController;
 
 	public InputHandler(Vector2 cameraTarget, Vector2 cameraOffset)
@@ -13,7 +14,7 @@ public class InputHandler
 	}
 
 	// Atualiza o estado do input
-	public char Update()
+	public void Update()
 	{
 		// Atualiza o CameraController
 		cameraController.Update();
@@ -23,7 +24,7 @@ public class InputHandler
 		{
 			if (Raylib.IsKeyPressed((KeyboardKey)key))
 			{
-				lastKeyPressed = (char)key;
+				LastKeyPressed = (char)key;
 				break; // sai do loop assim que encontrar uma tecla
 			}
 		}
@@ -31,16 +32,29 @@ public class InputHandler
 		// Verifica se a tecla ESC foi pressionada
 		if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE))
 		{
-			lastKeyPressed = ' ';
+			LastKeyPressed = ' ';
 		}
 
-		return lastKeyPressed;
+		if(LastKeyPressed != ' ')
+		{
+			if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+			{
+				FirstClickCoordinates = Raylib.GetMousePosition();
+				FirstClick = true;
+			}
+		}
+
+		return;
 	}
 
 	// Retorna a última tecla pressionada
 	public char GetLastKeyPressed()
 	{
-		return lastKeyPressed;
+		return LastKeyPressed;
+	}
+	public bool GetFirstClick()
+	{
+		return FirstClick;
 	}
 
 	// Se você precisar acessar o CameraController de fora, pode adicionar um método getter:

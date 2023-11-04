@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using RayLib2d.Drawing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,24 +20,37 @@ public class Line : IBasicShape
 	public Endpoint SelectedEndpoint { get; private set; } = Endpoint.None;
 	public Line(Vector2 start, Vector2 end, int thickness, Color color)
 	{
+		Vertices = new List<Vector2> { start, end };
+		Thickness = thickness;
+		ShapeColor = color;
 	}
+
 
 	public void Draw()
 	{
-		if (Vertices.Count == 2) // Check to ensure we have only two vertices for a line
-		{
-			Raylib.DrawLineV(Vertices[0], Vertices[1], ShapeColor);
-		}
+		if (Vertices == null || Vertices.Count != 2) return; // Saia do método se a lista de vértices estiver nula ou não tiver exatamente dois pontos
+
+		Raylib.DrawLineV(Vertices[0], Vertices[1], ShapeColor);
 	}
-	public static void DrawAllLines(List<Line> lines, bool IsDrawing, char lastKeyPressed)
+
+	public static void DrawAllLines(List<Line> lines, InputHandler inputHandler)
 	{
+		var lastKeyPressed = inputHandler.LastKeyPressed;
+		var firstClickCoordinates = inputHandler.FirstClickCoordinates;
 		lines.Where(line => !line.Selected).ToList().ForEach(line => line.Draw());
 		lines.Where(line => line.Selected).ToList().ForEach(line => line.DrawSelectedLines());
-		if(lastKeyPressed == 'L')
+		if(inputHandler.LastKeyPressed == 'L')
 		{
-			if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT))
+			if (lastKeyPressed == 'L' && inputHandler.FirstClick)
 			{
-				Raylib.DrawLineV(start, mouseWorldPos, Color.RED);
+				Raylib.DrawLineV(firstClickCoordinates, Raylib.GetMousePosition(), Color.RED);
+				if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+				{
+					Line newLine = new Line(firstClickCoordinates, Raylib.GetMousePosition(), 5, Color.BLUE);
+					Drawer.Lines.Add(newLine);
+					//inputHandler.FirstClick = false;
+				}
+
 			}
 		}
 	}
