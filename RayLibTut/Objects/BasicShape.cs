@@ -13,5 +13,4 @@ public interface IBasicShape
 	public bool Selected { get; set; }
 	public int Thickness { get; set; }
 	public Color ShapeColor { get; set; }
-	
 }

@@ -116,9 +116,14 @@ public class Line : IBasicShape
 			Raylib.DrawLineV(startPoint, endPoint, color);
 		}
 	}
-
 	private Vector2 GetMidPoint(Vector2 pointA, Vector2 pointB)
 	{
 		return new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
 	}
+	public bool IsMouseOver(Vector2 mousePosition, float threshold = 10f)
+	{
+		// Converte threshold para int antes de passá-lo para a função CheckCollisionPointLine
+		return Raylib.CheckCollisionPointLine(mousePosition, Vertices[0], Vertices[1], (int)threshold);
+	}
+
 }
