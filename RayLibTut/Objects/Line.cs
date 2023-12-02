@@ -25,7 +25,6 @@ public class Line : IBasicShape
 		ShapeColor = color;
 	}
 
-
 	public void Draw()
 	{
 		if (Vertices == null || Vertices.Count != 2) return; // Saia do método se a lista de vértices estiver nula ou não tiver exatamente dois pontos
@@ -39,23 +38,25 @@ public class Line : IBasicShape
 		var firstClickCoordinates = inputHandler.FirstClickCoordinates;
 		lines.Where(line => !line.Selected).ToList().ForEach(line => line.Draw());
 		lines.Where(line => line.Selected).ToList().ForEach(line => line.DrawSelectedLines());
-		if(inputHandler.LastKeyPressed == 'L')
+		if (inputHandler.LastKeyPressed == 'L')
 		{
 			if (lastKeyPressed == 'L' && inputHandler.FirstClick)
 			{
 				Raylib.DrawLineV(firstClickCoordinates, inputHandler.MouseWorldPosition, Color.RED);
 				if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 				{
-					// Novamente, substitua Raylib.GetMousePosition() por inputHandler.MouseWorldPosition
 					var secondClickCoordinates = inputHandler.MouseWorldPosition;
 					Line newLine = new Line(firstClickCoordinates, secondClickCoordinates, 5, Color.BLUE);
 					Raylib.DrawLineV(firstClickCoordinates, secondClickCoordinates, Color.RED);
 					Drawer.Lines.Add(newLine);
-					//inputHandler.FirstClick = false;
+
+					// Atualiza FirstClickCoordinates para a posição do segundo clique
+					inputHandler.FirstClickCoordinates = secondClickCoordinates;
 				}
 			}
 		}
 	}
+
 
 	public void DrawSelectedLines()
 	{

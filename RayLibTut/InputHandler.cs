@@ -4,6 +4,7 @@ using System.Numerics;
 public class InputHandler
 {
 	public char LastKeyPressed = ' ';
+	private char PreviousKeyPressed = ' ';
 	public bool FirstClick = false;
 	public Vector2 FirstClickCoordinates;
 	private CameraController cameraController;
@@ -32,9 +33,9 @@ public class InputHandler
 			}
 		}
 
-		// Verifica se a tecla ESC foi pressionada
-		if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE))
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
 		{
+			ResetClickState();
 			LastKeyPressed = ' ';
 		}
 
@@ -48,6 +49,13 @@ public class InputHandler
 		}
 
 		return;
+	}
+
+	private void ResetClickState()
+	{
+		FirstClick = false;
+		FirstClickCoordinates = Vector2.Zero;
+		PreviousKeyPressed = LastKeyPressed;
 	}
 
 	// Retorna a última tecla pressionada
