@@ -8,16 +8,19 @@ public class InputHandler
 	public Vector2 FirstClickCoordinates;
 	private CameraController cameraController;
 
+	// Adiciona uma nova propriedade para armazenar a posição do mouse no mundo
+	public Vector2 MouseWorldPosition { get; private set; }
+
 	public InputHandler(Vector2 cameraTarget, Vector2 cameraOffset)
 	{
 		cameraController = new CameraController(cameraTarget, cameraOffset);
 	}
 
-	// Atualiza o estado do input
 	public void Update()
 	{
 		// Atualiza o CameraController
 		cameraController.Update();
+		MouseWorldPosition = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), cameraController.GetCamera());
 
 		// Verifica teclas pressionadas, modificar depois para diferenciar teclas de comandos de unidades
 		for (int key = 32; key < 256; key++)
@@ -37,9 +40,9 @@ public class InputHandler
 
 		if(LastKeyPressed != ' ')
 		{
-			if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+			if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT) && !FirstClick)
 			{
-				FirstClickCoordinates = Raylib.GetMousePosition();
+				FirstClickCoordinates = MouseWorldPosition;
 				FirstClick = true;
 			}
 		}

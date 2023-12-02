@@ -7,8 +7,8 @@ static class Program
 {
 	static void Main(string[] args)
 	{
-		const int screenWidth = 800;
-		const int screenHeight = 450;
+		const int screenWidth = 1900;
+		const int screenHeight = 800;
 
 		Raylib.InitWindow(screenWidth, screenHeight, "2D Space with Camera Control");
 
@@ -38,6 +38,7 @@ static class Program
 			Raylib.EndMode2D();
 
 			Raylib.DrawText($"Last key pressed: {inputHandler.GetLastKeyPressed()}, FirstClick: {inputHandler.GetFirstClick()}", 10, 10, 20, Color.WHITE);
+			Raylib.DrawText($"Mouse position: {Raylib.GetMousePosition()}, Transformed Mouse position: ", 10, 25, 20, Color.WHITE);
 
 			Raylib.EndDrawing();
 		}
@@ -50,6 +51,6 @@ static class Program
 	{
 		Raylib.DrawRectangle(100, 100, 200, 200, Color.RED);
 		Raylib.DrawCircle(500, 500, 100, Color.BLUE);
-		Raylib.DrawLine(0, 0, 1000, 1000, Color.GREEN);
+		//Raylib.DrawLine(0, 0, 1000, 1000, Color.GREEN);
 	}
 }

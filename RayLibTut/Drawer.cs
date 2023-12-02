@@ -25,6 +25,5 @@ namespace RayLib2d.Drawing
 		{
 			Line.DrawAllLines(Lines, inputHandler);
 		}
-
 	}
 }

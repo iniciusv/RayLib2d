@@ -43,14 +43,16 @@ public class Line : IBasicShape
 		{
 			if (lastKeyPressed == 'L' && inputHandler.FirstClick)
 			{
-				Raylib.DrawLineV(firstClickCoordinates, Raylib.GetMousePosition(), Color.RED);
+				Raylib.DrawLineV(firstClickCoordinates, inputHandler.MouseWorldPosition, Color.RED);
 				if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 				{
-					Line newLine = new Line(firstClickCoordinates, Raylib.GetMousePosition(), 5, Color.BLUE);
+					// Novamente, substitua Raylib.GetMousePosition() por inputHandler.MouseWorldPosition
+					var secondClickCoordinates = inputHandler.MouseWorldPosition;
+					Line newLine = new Line(firstClickCoordinates, secondClickCoordinates, 5, Color.BLUE);
+					Raylib.DrawLineV(firstClickCoordinates, secondClickCoordinates, Color.RED);
 					Drawer.Lines.Add(newLine);
 					//inputHandler.FirstClick = false;
 				}
-
 			}
 		}
 	}

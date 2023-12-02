@@ -15,7 +15,6 @@ public class CameraController
 			rotation = 0.0f
 		};
 	}
-
 	public Camera2D GetCamera() => camera;
 
 	public void Update()
