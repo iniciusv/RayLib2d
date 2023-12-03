@@ -9,6 +9,7 @@ public class Drawer
 	public static List<Line> Lines { get; private set; } = new List<Line>();
 	public bool IsDrawing { get; set; } = false;
 	private Vector2? firstPoint = null;
+	static Vector2? LastProximityPoint = null;
 
 	public Drawer()
 	{

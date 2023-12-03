@@ -1,5 +1,6 @@
 ﻿using Raylib_cs;
 using RayLib2d.Drawing;
+using RayLib2d.Extensoins;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Net;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static Program;
 
 namespace RayLib2d.Objects;
 public class Line : IBasicShape
@@ -28,13 +30,14 @@ public class Line : IBasicShape
 
 	public void Draw()
 	{
-		if (Vertices == null || Vertices.Count != 2) return; 
+		if (Vertices == null || Vertices.Count != 2) return;
 
 		Raylib.DrawLineV(Vertices[0], Vertices[1], ShapeColor);
 	}
 	public static void DrawAllLines(List<Line> lines)
 	{
-		lines.ForEach(line => {
+		lines.ForEach(line =>
+		{
 			if (line.Selected)
 				line.DrawSelectedLines();
 			else
@@ -43,21 +46,35 @@ public class Line : IBasicShape
 
 		if (InputHandler.LastKeyPressed == 'L' && InputHandler.FirstClick)
 		{
-			var firstClick = GetSnappedProximity(lines);
-			DrawTemporaryLine(lines);
-		}
-	}
-	private static void DrawTemporaryLine(List<Line> lines)
-	{
-		Vector2 secondClickCoordinates = GetSnappedProximity(lines);
-		Raylib.DrawLineV(InputHandler.FirstClickCoordinates, secondClickCoordinates, Color.RED);
+			var secondClickCoordinates = InputHandler.MouseWorldPosition;
+			var secondClickModified = secondClickCoordinates.GetSnappedAnglePoint(InputHandler.FirstClickCoordinates);
+			secondClickModified = secondClickCoordinates.GetPointInProximity(lines);
 
-		if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
-		{
-			lines.Add(new Line(InputHandler.FirstClickCoordinates, secondClickCoordinates, 5, Color.BLUE));
-			InputHandler.FirstClickCoordinates = secondClickCoordinates;
+			if (secondClickCoordinates != secondClickModified)
+			{
+				GlobalState.LastModifiedSecondClick = secondClickModified;
+			}
+
+			if (GlobalState.LastModifiedSecondClick.HasValue)
+			{
+				DrawTemporaryLine(InputHandler.MouseWorldPosition, GlobalState.LastModifiedSecondClick.Value);
+			}
+
+			//secondClickModified = secondClickModified.GetSnappedAnglePoint(InputHandler.FirstClickCoordinates);
+			DrawTemporaryLine(InputHandler.FirstClickCoordinates, secondClickModified);
+
+			if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+			{
+				lines.Add(new Line(InputHandler.FirstClickCoordinates, secondClickModified, 5, Color.BLUE));
+				InputHandler.FirstClickCoordinates = secondClickModified;
+				GlobalState.LastModifiedSecondClick = null; // Reset após a utilização
+			}
 		}
 	}
+
+
+
+	private static void DrawTemporaryLine(Vector2 start, Vector2 end) => Raylib.DrawLineV(start, end, Color.RED);
 
 	public void DrawSelectedLines()
 	{
@@ -112,41 +129,6 @@ public class Line : IBasicShape
 	private float GetAngleBetweenPoints(Vector2 pointA, Vector2 pointB) => (float)Math.Atan2(pointB.Y - pointA.Y, pointB.X - pointA.X);
 	private Vector2 GetMidPoint(Vector2 pointA, Vector2 pointB) => new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
 	public bool IsMouseOver(Vector2 mousePosition, float threshold = 10f) => Raylib.CheckCollisionPointLine(mousePosition, Vertices[0], Vertices[1], (int)threshold);
-	private static Vector2 GetSnappedProximity(List<Line> lines, float snapRadius = 100f)
-	{
-		Vector2 closestPoint = InputHandler.MouseWorldPosition;
-		float minDistanceSquared = snapRadius * snapRadius; // Usa o quadrado da distância para evitar cálculos de raiz quadrada
-
-		foreach (var line in lines)
-		{
-			foreach (var vertex in line.Vertices)
-			{
-				float distanceSquared = Vector2.DistanceSquared(closestPoint, vertex);
-				if (distanceSquared < minDistanceSquared)
-				{
-					closestPoint = vertex;
-					minDistanceSquared = distanceSquared;
-				}
-			}
-		}
-		if(closestPoint == InputHandler.MouseWorldPosition)
-			closestPoint = GetSnappedAnglePoint(InputHandler.FirstClickCoordinates, InputHandler.MouseWorldPosition);
-
-
-		return closestPoint;
-	}
-	private static Vector2 GetSnappedAnglePoint(Vector2 firstPoint, Vector2 currentPoint)
-	{
-		float angle = (float)Math.Atan2(currentPoint.Y - firstPoint.Y, currentPoint.X - firstPoint.X);
-		float angleDegrees = (float)(angle * (180 / Math.PI));
-		float snappedAngleDegrees = (float)(Math.Round(angleDegrees / 10) * 10);
-		float snappedAngleRadians = (float)(snappedAngleDegrees * (Math.PI / 180));
-
-		float distance = Vector2.Distance(firstPoint, currentPoint);
-		float deltaX = (float)(distance * Math.Cos(snappedAngleRadians));
-		float deltaY = (float)(distance * Math.Sin(snappedAngleRadians));
-
-		return new Vector2(firstPoint.X + deltaX, firstPoint.Y + deltaY);
-	}
-
 }
+
+
