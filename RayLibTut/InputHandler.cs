@@ -7,23 +7,24 @@ public class InputHandler
 	public char LastKeyPressed = ' ';
 	private char PreviousKeyPressed = ' ';
 	public bool FirstClick = false;
+	public bool SnapAngle { get; private set; } = false;
+	public bool IsAltKeyPressed { get; private set; } = false;
 	public Vector2 FirstClickCoordinates;
 	private CameraController cameraController;
 
 	// Adiciona uma nova propriedade para armazenar a posição do mouse no mundo
 	public Vector2 MouseWorldPosition { get; private set; }
 
-	public InputHandler(Vector2 cameraTarget, Vector2 cameraOffset)
-	{
-		cameraController = new CameraController(cameraTarget, cameraOffset);
-	}
-
+    public InputHandler(Vector2 cameraTarget, Vector2 cameraOffset)
+    {
+        cameraController = new CameraController(cameraTarget, cameraOffset);
+    }
 	public void Update()
 	{
 		// Atualiza o CameraController
 		cameraController.Update();
 		MouseWorldPosition = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), cameraController.GetCamera());
-
+		IsAltKeyPressed = Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
 		// Verifica teclas pressionadas, modificar depois para diferenciar teclas de comandos de unidades
 		for (int key = 32; key < 256; key++)
 		{
@@ -47,6 +48,10 @@ public class InputHandler
 				FirstClickCoordinates = MouseWorldPosition;
 				FirstClick = true;
 			}
+		}
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_F7))
+		{
+			SnapAngle = !SnapAngle; // Alterna o estado de SnapAngle
 		}
 
 		return;

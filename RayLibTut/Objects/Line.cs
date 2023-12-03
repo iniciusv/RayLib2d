@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 namespace RayLib2d.Objects;
 public class Line : IBasicShape
 {
-	public List<Vector2> Vertices { get; set ; }
-	public bool Selected { get; set ; }
+	public List<Vector2> Vertices { get; set; }
+	public bool Selected { get; set; }
 	public int Thickness { get; set; }
 	public Color ShapeColor { get; set; }
 	public enum Endpoint { None, Start, Middle, End }
@@ -38,17 +38,32 @@ public class Line : IBasicShape
 		var firstClickCoordinates = inputHandler.FirstClickCoordinates;
 		lines.Where(line => !line.Selected).ToList().ForEach(line => line.Draw());
 		lines.Where(line => line.Selected).ToList().ForEach(line => line.DrawSelectedLines());
+
+
 		if (inputHandler.LastKeyPressed == 'L')
 		{
 			if (lastKeyPressed == 'L' && inputHandler.FirstClick)
 			{
-				Raylib.DrawLineV(firstClickCoordinates, inputHandler.MouseWorldPosition, Color.RED);
+				Vector2 secondClickCoordinates = inputHandler.MouseWorldPosition;
+
+
+				// Se o snap de ângulo estiver ativado, ajusta o segundo ponto
+				if (inputHandler.SnapAngle)
+				{
+					secondClickCoordinates = GetSnappedPoint(firstClickCoordinates, secondClickCoordinates);
+				}
+				// Aplica o snap de proximidade se a tecla Alt estiver pressionada
+				if (inputHandler.IsAltKeyPressed)
+				{
+					secondClickCoordinates = GetSnappedProximity(secondClickCoordinates, lines);
+				}
+
+				Raylib.DrawLineV(firstClickCoordinates, secondClickCoordinates, Color.RED);
+
 				if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 				{
-					var secondClickCoordinates = inputHandler.MouseWorldPosition;
 					Line newLine = new Line(firstClickCoordinates, secondClickCoordinates, 5, Color.BLUE);
-					Raylib.DrawLineV(firstClickCoordinates, secondClickCoordinates, Color.RED);
-					Drawer.Lines.Add(newLine);
+					lines.Add(newLine);
 
 					// Atualiza FirstClickCoordinates para a posição do segundo clique
 					inputHandler.FirstClickCoordinates = secondClickCoordinates;
@@ -56,8 +71,39 @@ public class Line : IBasicShape
 			}
 		}
 	}
+	private static Vector2 GetSnappedProximity(Vector2 mousePosition, List<Line> lines, float snapRadius = 100f)
+	{
+		Vector2 closestPoint = mousePosition;
+		float minDistanceSquared = snapRadius * snapRadius; // Usa o quadrado da distância para evitar cálculos de raiz quadrada
 
+		foreach (var line in lines)
+		{
+			foreach (var vertex in line.Vertices)
+			{
+				float distanceSquared = Vector2.DistanceSquared(mousePosition, vertex);
+				if (distanceSquared < minDistanceSquared)
+				{
+					closestPoint = vertex;
+					minDistanceSquared = distanceSquared;
+				}
+			}
+		}
+		return closestPoint;
+	}
 
+	private static Vector2 GetSnappedPoint(Vector2 firstPoint, Vector2 currentPoint)
+	{
+		float angle = (float)Math.Atan2(currentPoint.Y - firstPoint.Y, currentPoint.X - firstPoint.X);
+		float angleDegrees = (float)(angle * (180 / Math.PI));
+		float snappedAngleDegrees = (float)(Math.Round(angleDegrees / 10) * 10);
+		float snappedAngleRadians = (float)(snappedAngleDegrees * (Math.PI / 180));
+
+		float distance = Vector2.Distance(firstPoint, currentPoint);
+		float deltaX = (float)(distance * Math.Cos(snappedAngleRadians));
+		float deltaY = (float)(distance * Math.Sin(snappedAngleRadians));
+
+		return new Vector2(firstPoint.X + deltaX, firstPoint.Y + deltaY);
+	}
 	public void DrawSelectedLines()
 	{
 		Color lineColor = Selected ? Color.BLUE : Color.RED;
