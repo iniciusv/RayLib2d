@@ -32,7 +32,7 @@ public class Line : IBasicShape
 
 		Raylib.DrawLineV(Vertices[0], Vertices[1], ShapeColor);
 	}
-	public static void DrawAllLines(List<Line> lines, InputHandler inputHandler)
+	public static void DrawAllLines(List<Line> lines)
 	{
 		lines.ForEach(line => {
 			if (line.Selected)
@@ -41,21 +41,21 @@ public class Line : IBasicShape
 				line.Draw();
 		});
 
-		if (inputHandler.LastKeyPressed == 'L' && inputHandler.FirstClick)
+		if (InputHandler.LastKeyPressed == 'L' && InputHandler.FirstClick)
 		{
-			var firstClick = GetSnappedProximity(inputHandler, lines);
-			DrawTemporaryLine(lines, inputHandler);
+			var firstClick = GetSnappedProximity(lines);
+			DrawTemporaryLine(lines);
 		}
 	}
-	private static void DrawTemporaryLine(List<Line> lines, InputHandler inputHandler)
+	private static void DrawTemporaryLine(List<Line> lines)
 	{
-		Vector2 secondClickCoordinates = GetSnappedProximity(inputHandler, lines);
-		Raylib.DrawLineV(inputHandler.FirstClickCoordinates, secondClickCoordinates, Color.RED);
+		Vector2 secondClickCoordinates = GetSnappedProximity(lines);
+		Raylib.DrawLineV(InputHandler.FirstClickCoordinates, secondClickCoordinates, Color.RED);
 
 		if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 		{
-			lines.Add(new Line(inputHandler.FirstClickCoordinates, secondClickCoordinates, 5, Color.BLUE));
-			inputHandler.FirstClickCoordinates = secondClickCoordinates;
+			lines.Add(new Line(InputHandler.FirstClickCoordinates, secondClickCoordinates, 5, Color.BLUE));
+			InputHandler.FirstClickCoordinates = secondClickCoordinates;
 		}
 	}
 
@@ -112,9 +112,9 @@ public class Line : IBasicShape
 	private float GetAngleBetweenPoints(Vector2 pointA, Vector2 pointB) => (float)Math.Atan2(pointB.Y - pointA.Y, pointB.X - pointA.X);
 	private Vector2 GetMidPoint(Vector2 pointA, Vector2 pointB) => new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
 	public bool IsMouseOver(Vector2 mousePosition, float threshold = 10f) => Raylib.CheckCollisionPointLine(mousePosition, Vertices[0], Vertices[1], (int)threshold);
-	private static Vector2 GetSnappedProximity(InputHandler inputHandler, List<Line> lines, float snapRadius = 100f)
+	private static Vector2 GetSnappedProximity(List<Line> lines, float snapRadius = 100f)
 	{
-		Vector2 closestPoint = inputHandler.MouseWorldPosition;
+		Vector2 closestPoint = InputHandler.MouseWorldPosition;
 		float minDistanceSquared = snapRadius * snapRadius; // Usa o quadrado da distância para evitar cálculos de raiz quadrada
 
 		foreach (var line in lines)
@@ -129,8 +129,8 @@ public class Line : IBasicShape
 				}
 			}
 		}
-		if(closestPoint == inputHandler.MouseWorldPosition)
-			closestPoint = GetSnappedAnglePoint(inputHandler.FirstClickCoordinates, inputHandler.MouseWorldPosition);
+		if(closestPoint == InputHandler.MouseWorldPosition)
+			closestPoint = GetSnappedAnglePoint(InputHandler.FirstClickCoordinates, InputHandler.MouseWorldPosition);
 
 
 		return closestPoint;

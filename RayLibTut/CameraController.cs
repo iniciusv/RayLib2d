@@ -1,11 +1,11 @@
 ﻿using Raylib_cs;
 using System.Numerics;
 
-public class CameraController
+static public class CameraController
 {
-	private Camera2D camera;
+	static private Camera2D camera;
 
-	public CameraController(Vector2 target, Vector2 offset)
+	static public void Initialize(Vector2 target, Vector2 offset)
 	{
 		camera = new Camera2D
 		{
@@ -15,9 +15,10 @@ public class CameraController
 			rotation = 0.0f
 		};
 	}
-	public Camera2D GetCamera() => camera;
 
-	public void Update()
+	static public Camera2D GetCamera() => camera;
+
+	static public void Update()
 	{
 		// Camera control
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON))

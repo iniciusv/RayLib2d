@@ -20,20 +20,20 @@ public class Drawer
 			};
 	}
 
-	public void Update(InputHandler inputHandler)
+	public void Update()
 	{
 		// Desenha todas as linhas
-		Line.DrawAllLines(Lines, inputHandler);
+		Line.DrawAllLines(Lines);
 
 		// Verificação de seleção de linha
-		HandleLineSelection(inputHandler);
+		HandleLineSelection();
 
 		if (Raylib.IsKeyPressed(KeyboardKey.KEY_DELETE)) DeleteSelectedLines();
 
-		if (inputHandler.Reset)
+		if (InputHandler.Reset)
 		{
 			DeselectAllLines();
-			inputHandler.Reset = false;
+			InputHandler.Reset = false;
 		}
 	}
 	private void DeleteSelectedLines()
@@ -47,11 +47,11 @@ public class Drawer
 	}
 
 
-	private void HandleLineSelection(InputHandler inputHandler)
+	private void HandleLineSelection()
 	{
-		if (inputHandler.LastKeyPressed == ' ' && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+		if (InputHandler.LastKeyPressed == ' ' && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 		{
-			Vector2 clickPosition = inputHandler.MouseWorldPosition;
+			Vector2 clickPosition = InputHandler.MouseWorldPosition;
 			foreach (var line in Lines)
 			{
 				if (line.IsMouseOver(clickPosition))
