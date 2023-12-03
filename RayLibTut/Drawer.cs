@@ -28,9 +28,12 @@ public class Drawer
 		// Verificação de seleção de linha
 		HandleLineSelection(inputHandler);
 
-		if (Raylib.IsKeyPressed(KeyboardKey.KEY_DELETE))
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_DELETE)) DeleteSelectedLines();
+
+		if (inputHandler.Reset)
 		{
-			DeleteSelectedLines();
+			DeselectAllLines();
+			inputHandler.Reset = false;
 		}
 	}
 	private void DeleteSelectedLines()
@@ -38,6 +41,12 @@ public class Drawer
 		// Remove todas as linhas que estão selecionadas
 		Lines = Lines.Where(line => !line.Selected).ToList();
 	}
+	public void DeselectAllLines()
+	{
+		Lines.ForEach(line => line.Selected = false);
+	}
+
+
 	private void HandleLineSelection(InputHandler inputHandler)
 	{
 		if (inputHandler.LastKeyPressed == ' ' && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))

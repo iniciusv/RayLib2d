@@ -9,6 +9,7 @@ public class InputHandler
 	public bool FirstClick = false;
 	public bool SnapAngle { get; private set; } = false;
 	public bool IsAltKeyPressed { get; private set; } = false;
+	public bool Reset = false;
 	public Vector2 FirstClickCoordinates;
 	private CameraController cameraController;
 
@@ -35,13 +36,9 @@ public class InputHandler
 			}
 		}
 
-		if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
-		{
-			ResetClickState();
-			LastKeyPressed = ' ';
-		}
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE)) ResetClickState();
 
-		if(LastKeyPressed != ' ')
+		if (LastKeyPressed != ' ')
 		{
 			if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT) && !FirstClick)
 			{
@@ -49,10 +46,7 @@ public class InputHandler
 				FirstClick = true;
 			}
 		}
-		if (Raylib.IsKeyPressed(KeyboardKey.KEY_F7))
-		{
-			SnapAngle = !SnapAngle; // Alterna o estado de SnapAngle
-		}
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_F7)) SnapAngle = !SnapAngle; // Alterna o estado de SnapAngle
 
 		return;
 	}
@@ -62,21 +56,12 @@ public class InputHandler
 		FirstClick = false;
 		FirstClickCoordinates = Vector2.Zero;
 		PreviousKeyPressed = LastKeyPressed;
+		LastKeyPressed = ' ';
+		Reset = true;
 	}
 
-	// Retorna a última tecla pressionada
-	public char GetLastKeyPressed()
-	{
-		return LastKeyPressed;
-	}
-	public bool GetFirstClick()
-	{
-		return FirstClick;
-	}
+	public char GetLastKeyPressed() => LastKeyPressed;// Retorna a última tecla pressionada
+	public bool GetFirstClick() => FirstClick;
+	public Camera2D GetCamera() => cameraController.GetCamera();// Se você precisar acessar o CameraController de fora, pode adicionar um método getter:
 
-	// Se você precisar acessar o CameraController de fora, pode adicionar um método getter:
-	public Camera2D GetCamera()
-	{
-		return cameraController.GetCamera();
-	}
 }
