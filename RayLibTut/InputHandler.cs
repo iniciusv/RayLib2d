@@ -7,8 +7,8 @@ public class InputHandler
 	public char LastKeyPressed = ' ';
 	private char PreviousKeyPressed = ' ';
 	public bool FirstClick = false;
-	public bool SnapAngle { get; private set; } = false;
-	public bool IsAltKeyPressed { get; private set; } = false;
+	public bool SnapAngle { get; private set; } = true;
+	public bool IsAltKeyPressed { get; private set; } = true;
 	public bool Reset = false;
 	public Vector2 FirstClickCoordinates;
 	private CameraController cameraController;
@@ -25,7 +25,7 @@ public class InputHandler
 		// Atualiza o CameraController
 		cameraController.Update();
 		MouseWorldPosition = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), cameraController.GetCamera());
-		IsAltKeyPressed = Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
+		//IsAltKeyPressed = Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
 		// Verifica teclas pressionadas, modificar depois para diferenciar teclas de comandos de unidades
 		for (int key = 32; key < 256; key++)
 		{

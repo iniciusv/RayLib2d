@@ -43,13 +43,13 @@ public class Line : IBasicShape
 
 		if (inputHandler.LastKeyPressed == 'L' && inputHandler.FirstClick)
 		{
-			var firstClick = GetAdjustedSecondPoint(inputHandler, lines);
+			var firstClick = GetSnappedProximity(inputHandler, lines);
 			DrawTemporaryLine(lines, inputHandler);
 		}
 	}
 	private static void DrawTemporaryLine(List<Line> lines, InputHandler inputHandler)
 	{
-		Vector2 secondClickCoordinates = GetAdjustedSecondPoint(inputHandler, lines);
+		Vector2 secondClickCoordinates = GetSnappedProximity(inputHandler, lines);
 		Raylib.DrawLineV(inputHandler.FirstClickCoordinates, secondClickCoordinates, Color.RED);
 
 		if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
@@ -58,10 +58,7 @@ public class Line : IBasicShape
 			inputHandler.FirstClickCoordinates = secondClickCoordinates;
 		}
 	}
-	private static Vector2 GetAdjustedSecondPoint(InputHandler inputHandler, List<Line> lines) => 
-		inputHandler.IsAltKeyPressed ? GetSnappedProximity(inputHandler.MouseWorldPosition, lines) :
-		(inputHandler.SnapAngle ? GetSnappedPoint(inputHandler.FirstClickCoordinates, inputHandler.MouseWorldPosition) :
-		inputHandler.MouseWorldPosition);
+
 	public void DrawSelectedLines()
 	{
 		Color lineColor = Selected ? Color.BLUE : Color.RED;
@@ -115,16 +112,16 @@ public class Line : IBasicShape
 	private float GetAngleBetweenPoints(Vector2 pointA, Vector2 pointB) => (float)Math.Atan2(pointB.Y - pointA.Y, pointB.X - pointA.X);
 	private Vector2 GetMidPoint(Vector2 pointA, Vector2 pointB) => new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
 	public bool IsMouseOver(Vector2 mousePosition, float threshold = 10f) => Raylib.CheckCollisionPointLine(mousePosition, Vertices[0], Vertices[1], (int)threshold);
-	private static Vector2 GetSnappedProximity(Vector2 mousePosition, List<Line> lines, float snapRadius = 100f)
+	private static Vector2 GetSnappedProximity(InputHandler inputHandler, List<Line> lines, float snapRadius = 100f)
 	{
-		Vector2 closestPoint = mousePosition;
+		Vector2 closestPoint = inputHandler.MouseWorldPosition;
 		float minDistanceSquared = snapRadius * snapRadius; // Usa o quadrado da distância para evitar cálculos de raiz quadrada
 
 		foreach (var line in lines)
 		{
 			foreach (var vertex in line.Vertices)
 			{
-				float distanceSquared = Vector2.DistanceSquared(mousePosition, vertex);
+				float distanceSquared = Vector2.DistanceSquared(closestPoint, vertex);
 				if (distanceSquared < minDistanceSquared)
 				{
 					closestPoint = vertex;
@@ -132,9 +129,13 @@ public class Line : IBasicShape
 				}
 			}
 		}
+		if(closestPoint == inputHandler.MouseWorldPosition)
+			closestPoint = GetSnappedAnglePoint(inputHandler.FirstClickCoordinates, inputHandler.MouseWorldPosition);
+
+
 		return closestPoint;
 	}
-	private static Vector2 GetSnappedPoint(Vector2 firstPoint, Vector2 currentPoint)
+	private static Vector2 GetSnappedAnglePoint(Vector2 firstPoint, Vector2 currentPoint)
 	{
 		float angle = (float)Math.Atan2(currentPoint.Y - firstPoint.Y, currentPoint.X - firstPoint.X);
 		float angleDegrees = (float)(angle * (180 / Math.PI));
