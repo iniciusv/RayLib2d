@@ -48,20 +48,20 @@ public class Line : IBasicShape
 		{
 			var secondClickCoordinates = InputHandler.MouseWorldPosition;
 			var secondClickModified = secondClickCoordinates.GetSnappedAnglePoint(InputHandler.FirstClickCoordinates);
-			secondClickModified = secondClickCoordinates.GetPointInProximity(lines);
+			var proximityResult = secondClickCoordinates.GetPointInProximity(lines);
 
-			if (secondClickCoordinates != secondClickModified)
+			if (proximityResult.snapped)
 			{
+				secondClickModified = proximityResult.point;
 				GlobalState.LastModifiedSecondClick = secondClickModified;
 			}
 
 			if (GlobalState.LastModifiedSecondClick.HasValue)
 			{
-				DrawTemporaryLine(InputHandler.MouseWorldPosition, GlobalState.LastModifiedSecondClick.Value);
+				DrawTemporaryLine(GlobalState.LastModifiedSecondClick.Value, secondClickModified, Color.RED);
 			}
 
-			//secondClickModified = secondClickModified.GetSnappedAnglePoint(InputHandler.FirstClickCoordinates);
-			DrawTemporaryLine(InputHandler.FirstClickCoordinates, secondClickModified);
+			DrawTemporaryLine(InputHandler.FirstClickCoordinates, secondClickModified, Color.RED);
 
 			if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 			{
@@ -74,7 +74,7 @@ public class Line : IBasicShape
 
 
 
-	private static void DrawTemporaryLine(Vector2 start, Vector2 end) => Raylib.DrawLineV(start, end, Color.RED);
+	private static void DrawTemporaryLine(Vector2 start, Vector2 end, Color color) => Raylib.DrawLineV(start, end, color);
 
 	public void DrawSelectedLines()
 	{

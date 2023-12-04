@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace RayLib2d.Extensoins;
 public static class Vector2Extensions
 {
-	public static Vector2 GetPointInProximity(this Vector2 point, List<Line> lines, float snapRadius = 100f)
+	public static (Vector2 point, bool snapped) GetPointInProximity(this Vector2 point, List<Line> lines, float snapRadius = 100f)
 	{
 		Vector2 closestPoint = point;
 		float minDistanceSquared = snapRadius * snapRadius;
@@ -19,13 +19,11 @@ public static class Vector2Extensions
 			float distanceSquared = Vector2.DistanceSquared(point, line);
 			if (distanceSquared < minDistanceSquared)
 			{
-				closestPoint = line;
-				minDistanceSquared = distanceSquared;
-				return closestPoint;
+				return (line, true); // Retorna o ponto mais próximo e 'true' para indicar que foi modificado
 			}
 		}
 
-		return closestPoint;
+		return (closestPoint, false); // Retorna o ponto original e 'false' para indicar que não foi modificado
 	}
 	public static Vector2 GetSnappedAnglePoint(this Vector2 currentPoint, Vector2 firstPoint)
 	{
