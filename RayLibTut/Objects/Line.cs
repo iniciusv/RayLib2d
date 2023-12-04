@@ -58,6 +58,9 @@ public class Line : IBasicShape
 
 			if (GlobalState.LastModifiedSecondClick.HasValue)
 			{
+				// Aplica o ajuste de ângulo considerando a última posição modificada
+				secondClickModified = secondClickModified.GetSnappedAnglePoint(GlobalState.LastModifiedSecondClick.Value);
+
 				DrawTemporaryLine(GlobalState.LastModifiedSecondClick.Value, secondClickModified, Color.RED);
 			}
 
@@ -71,6 +74,7 @@ public class Line : IBasicShape
 			}
 		}
 	}
+ 
 
 
 
