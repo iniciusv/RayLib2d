@@ -61,7 +61,8 @@ public class Line : IBasicShape
 				// Aplica o ajuste de ângulo considerando a última posição modificada
 				secondClickModified = secondClickModified.GetSnappedAnglePoint(GlobalState.LastModifiedSecondClick.Value);
 
-				DrawTemporaryLine(GlobalState.LastModifiedSecondClick.Value, secondClickModified, Color.RED);
+				// Desenha uma linha pontilhada
+				DrawDashedLine(GlobalState.LastModifiedSecondClick.Value, secondClickModified, 3, 3, Color.WHITE);
 			}
 
 			DrawTemporaryLine(InputHandler.FirstClickCoordinates, secondClickModified, Color.RED);
@@ -87,7 +88,7 @@ public class Line : IBasicShape
 		if (Selected)
 		{
 			// Desenhe a linha tracejada quando estiver selecionada
-			DrawDashedLine(Vertices[0], Vertices[1], lineColor);
+			DrawDashedLine(Vertices[0], Vertices[1], 10, 5 , lineColor);
 
 			float angle = GetAngleBetweenPoints(Vertices[0], Vertices[1]);
 
@@ -105,18 +106,24 @@ public class Line : IBasicShape
 			Raylib.DrawLineV(Vertices[0], Vertices[1], lineColor);
 		}
 	}
-	private void DrawDashedLine(Vector2 start, Vector2 end, Color color)
+	public static void DrawDashedLine(Vector2 start, Vector2 end, int dashLength, int spaceLength, Color color)
 	{
-		float distance = Vector2.Distance(start, end);
-		int segments = (int)distance / 10; // Ajuste esse valor conforme desejado
+		float totalLength = Vector2.Distance(start, end);
+		Vector2 direction = Vector2.Normalize(end - start);
 
-		for (int i = 0; i < segments; i++)
+		float drawnLength = 0.0f;
+		while (drawnLength < totalLength)
 		{
-			Vector2 startPoint = Vector2.Lerp(start, end, (float)i / segments);
-			Vector2 endPoint = Vector2.Lerp(start, end, (float)(i + 0.5) / segments); // 0.5 define o tamanho do segmento
-			Raylib.DrawLineV(startPoint, endPoint, color);
+			Vector2 dashStart = start + direction * drawnLength;
+			drawnLength += dashLength;
+			if (drawnLength > totalLength) drawnLength = totalLength;
+			Vector2 dashEnd = start + direction * drawnLength;
+			Raylib.DrawLineV(dashStart, dashEnd, color);
+
+			drawnLength += spaceLength;
 		}
 	}
+
 	private void DrawRotatedSquare(Vector2 center, float sideLength, float angle, Color color)
 	{
 		float halfDiagonal = sideLength * (float)Math.Sqrt(2) / 2;
