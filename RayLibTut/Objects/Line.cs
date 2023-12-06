@@ -56,12 +56,15 @@ public class Line : IBasicShape
 				GlobalState.LastModifiedSecondClick = secondClickModified;
 			}
 
+			if (float.TryParse(InputHandler.LineExtension, out float lineExtensionValue) && lineExtensionValue > 0)
+			{
+				var direction = Vector2.Normalize(secondClickModified - InputHandler.FirstClickCoordinates);
+				secondClickModified = InputHandler.FirstClickCoordinates + direction * lineExtensionValue;
+			}
+
 			if (GlobalState.LastModifiedSecondClick.HasValue)
 			{
-				// Aplica o ajuste de ângulo considerando a última posição modificada
 				secondClickModified = secondClickModified.GetSnappedAnglePoint(GlobalState.LastModifiedSecondClick.Value);
-
-				// Desenha uma linha pontilhada
 				DrawDashedLine(GlobalState.LastModifiedSecondClick.Value, secondClickModified, 3, 3, Color.WHITE);
 			}
 
@@ -72,12 +75,10 @@ public class Line : IBasicShape
 				lines.Add(new Line(InputHandler.FirstClickCoordinates, secondClickModified, 5, Color.BLUE));
 				InputHandler.FirstClickCoordinates = secondClickModified;
 				GlobalState.LastModifiedSecondClick = null; // Reset após a utilização
+				InputHandler.LineExtension = "";
 			}
 		}
 	}
- 
-
-
 
 	private static void DrawTemporaryLine(Vector2 start, Vector2 end, Color color) => Raylib.DrawLineV(start, end, color);
 
@@ -123,7 +124,6 @@ public class Line : IBasicShape
 			drawnLength += spaceLength;
 		}
 	}
-
 	private void DrawRotatedSquare(Vector2 center, float sideLength, float angle, Color color)
 	{
 		float halfDiagonal = sideLength * (float)Math.Sqrt(2) / 2;
@@ -136,7 +136,6 @@ public class Line : IBasicShape
 		Raylib.DrawTriangle(topLeft, topRight, bottomRight, color);
 		Raylib.DrawTriangle(bottomRight, bottomLeft, topLeft, color);
 	}
-
 	private float GetAngleBetweenPoints(Vector2 pointA, Vector2 pointB) => (float)Math.Atan2(pointB.Y - pointA.Y, pointB.X - pointA.X);
 	private Vector2 GetMidPoint(Vector2 pointA, Vector2 pointB) => new Vector2((pointA.X + pointB.X) / 2, (pointA.Y + pointB.Y) / 2);
 	public bool IsMouseOver(Vector2 mousePosition, float threshold = 10f) => Raylib.CheckCollisionPointLine(mousePosition, Vertices[0], Vertices[1], (int)threshold);

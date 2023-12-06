@@ -22,7 +22,6 @@ public static class Vector2Extensions
 				return (line, true); // Retorna o ponto mais próximo e 'true' para indicar que foi modificado
 			}
 		}
-
 		return (closestPoint, false); // Retorna o ponto original e 'false' para indicar que não foi modificado
 	}
 	public static Vector2 GetSnappedAnglePoint(this Vector2 currentPoint, Vector2 firstPoint)

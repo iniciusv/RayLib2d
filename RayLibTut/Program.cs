@@ -17,9 +17,6 @@ static class Program
 		Vector2 cameraOffset = new Vector2(screenWidth / 2.0f, screenHeight / 2.0f);
 		CameraController.Initialize(cameraTarget, cameraOffset);
 
-
-		char lastKeyPressed = ' ';
-		bool FirstClick = false;
 		Vector2 FirstClickCoordinates;
 
 		Drawer drawer = new Drawer();
@@ -42,6 +39,7 @@ static class Program
 			Raylib.DrawText($"Last key pressed: {InputHandler.GetLastKeyPressed()}, FirstClick: {InputHandler.GetFirstClick()}", 10, 10, 20, Color.WHITE);
 			Raylib.DrawText($"Mouse position: {Raylib.GetMousePosition()}, Transformed Mouse position: ", 10, 25, 20, Color.WHITE);
 			Raylib.DrawText($"LastModifiedSecondClick: {GlobalState.LastModifiedSecondClick}", 10, 40, 20, Color.WHITE);
+			Raylib.DrawText($"LastModifiedSecondClick: {InputHandler.LineExtension}", 10, 60, 20, Color.WHITE);
 
 			Raylib.EndDrawing();
 		}
@@ -49,12 +47,10 @@ static class Program
 		Raylib.CloseWindow(); // Close window and OpenGL context
 	}
 
-	// Draws some shapes in 2D space for visual reference
 	static void Draw2DSpace()
 	{
 		Raylib.DrawRectangle(100, 100, 200, 200, Color.RED);
 		Raylib.DrawCircle(500, 500, 100, Color.BLUE);
-		//Raylib.DrawLine(0, 0, 1000, 1000, Color.GREEN);
 	}
 	public static class GlobalState
 	{
