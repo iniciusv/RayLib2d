@@ -76,6 +76,7 @@ public class Line : IBasicShape
 				InputHandler.FirstClickCoordinates = secondClickModified;
 				GlobalState.LastModifiedSecondClick = null; // Reset após a utilização
 				InputHandler.LineExtension = "";
+				proximityResult.snapped = false;
 			}
 		}
 	}

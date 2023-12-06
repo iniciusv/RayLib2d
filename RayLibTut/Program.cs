@@ -36,10 +36,10 @@ static class Program
 			Draw2DSpace();
 			Raylib.EndMode2D();
 
-			Raylib.DrawText($"Last key pressed: {InputHandler.GetLastKeyPressed()}, FirstClick: {InputHandler.GetFirstClick()}", 10, 10, 20, Color.WHITE);
+			Raylib.DrawText($"Last key pressed: {InputHandler.FirstClickCoordinates}, FirstClick: {InputHandler.GetFirstClick()}", 10, 10, 20, Color.WHITE);
 			Raylib.DrawText($"Mouse position: {Raylib.GetMousePosition()}, Transformed Mouse position: ", 10, 25, 20, Color.WHITE);
 			Raylib.DrawText($"LastModifiedSecondClick: {GlobalState.LastModifiedSecondClick}", 10, 40, 20, Color.WHITE);
-			Raylib.DrawText($"LastModifiedSecondClick: {InputHandler.LineExtension}", 10, 60, 20, Color.WHITE);
+			Raylib.DrawText($"LineExtension: {InputHandler.LineExtension}", 10, 60, 20, Color.WHITE);
 
 			Raylib.EndDrawing();
 		}

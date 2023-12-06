@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using RayLib2d.Objects;
 using System.Numerics;
+using static Program;
 
 public static class InputHandler
 {
@@ -53,6 +54,7 @@ public static class InputHandler
 		LastKeyPressed = ' ';
 		LineExtension = "";
 		Reset = true;
+		GlobalState.LastModifiedSecondClick = null;
 	}
 	private static void HandleNumberInput()
 	{
