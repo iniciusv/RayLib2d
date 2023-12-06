@@ -40,4 +40,9 @@ static public class CameraController
 			if (camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
 		}
 	}
+	public static Vector2 WorldToScreen(Vector2 worldPoint)
+	{
+		Vector2 normalizedPoint = Vector2.Subtract(worldPoint, camera.target);
+		return Vector2.Add(Vector2.Multiply(normalizedPoint, camera.zoom), camera.offset);
+	}
 }

@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 namespace RayLib2d.Extensoins;
 public static class Vector2Extensions
 {
-	public static (Vector2 point, bool snapped) GetPointInProximity(this Vector2 point, List<Line> lines, float snapRadius = 100f)
+	public static (Vector2 point, bool snapped) GetPointInProximity(this Vector2 point, List<Line> lines, float snapRadius = 20f)
 	{
-		Vector2 closestPoint = point;
+		Vector2 pointInWorldSpace = CameraController.WorldToScreen(point); // Converta para o espaço do mundo
+		Vector2 closestPoint = pointInWorldSpace;
 		float minDistanceSquared = snapRadius * snapRadius;
 
 		foreach (var line in lines.SelectMany(line => line.Vertices))
 		{
-			float distanceSquared = Vector2.DistanceSquared(point, line);
+			Vector2 linePointInWorldSpace = CameraController.WorldToScreen(line); // Converta cada ponto da linha para o espaço do mundo
+			float distanceSquared = Vector2.DistanceSquared(pointInWorldSpace, linePointInWorldSpace);
 			if (distanceSquared < minDistanceSquared)
 			{
 				return (line, true); // Retorna o ponto mais próximo e 'true' para indicar que foi modificado
@@ -24,6 +26,7 @@ public static class Vector2Extensions
 		}
 		return (closestPoint, false); // Retorna o ponto original e 'false' para indicar que não foi modificado
 	}
+
 	public static Vector2 GetSnappedAnglePoint(this Vector2 currentPoint, Vector2 firstPoint)
 	{
 		float angle = (float)Math.Atan2(currentPoint.Y - firstPoint.Y, currentPoint.X - firstPoint.X);
