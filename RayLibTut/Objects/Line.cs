@@ -82,7 +82,6 @@ public class Line : IBasicShape
 	}
 
 	private static void DrawTemporaryLine(Vector2 start, Vector2 end, Color color) => Raylib.DrawLineV(start, end, color);
-
 	public void DrawSelectedLines()
 	{
 		Color lineColor = Selected ? Color.BLUE : Color.RED;

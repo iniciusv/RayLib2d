@@ -10,6 +10,7 @@ public class Drawer
 	public bool IsDrawing { get; set; } = false;
 	private Vector2? firstPoint = null;
 	static Vector2? LastProximityPoint = null;
+	private TrimLine trimLineTool;
 
 	public Drawer()
 	{
@@ -23,10 +24,11 @@ public class Drawer
 
 	public void Update()
 	{
-		// Desenha todas as linhas
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_T)) 
+			trimLineTool ??= new TrimLine();
+		
 		Line.DrawAllLines(Lines);
-
-		// Verificação de seleção de linha
+		trimLineTool?.Update();
 		HandleLineSelection();
 
 		if (Raylib.IsKeyPressed(KeyboardKey.KEY_DELETE)) DeleteSelectedLines();
@@ -37,20 +39,12 @@ public class Drawer
 			InputHandler.Reset = false;
 		}
 	}
-	private void DeleteSelectedLines()
-	{
-		// Remove todas as linhas que estão selecionadas
-		Lines = Lines.Where(line => !line.Selected).ToList();
-	}
-	public void DeselectAllLines()
-	{
-		Lines.ForEach(line => line.Selected = false);
-	}
-
+	private void DeleteSelectedLines() => Lines = Lines.Where(line => !line.Selected).ToList();
+	public void DeselectAllLines() => Lines.ForEach(line => line.Selected = false);
 
 	private void HandleLineSelection()
 	{
-		if (InputHandler.LastKeyPressed == ' ' && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+		if ( Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 		{
 			Vector2 clickPosition = InputHandler.MouseWorldPosition;
 			foreach (var line in Lines)
