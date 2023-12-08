@@ -16,6 +16,24 @@ public class ShapeSelector
 	{
 		this.lines = lines;
 	}
+	public void ManageRectangleSelection()
+	{
+		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
+		{
+			if (!IsSelecting)
+			{
+				StartRectangleSelection(InputHandler.MouseWorldPosition);
+			}
+			else
+			{
+				UpdateRectangleSelection(InputHandler.MouseWorldPosition);
+			}
+		}
+		else if (IsSelecting)
+		{
+			EndRectangleSelection();
+		}
+	}
 
 	public void HandleLineSelection()
 	{
@@ -31,5 +49,48 @@ public class ShapeSelector
 				}
 			}
 		}
+	}
+	public void StartRectangleSelection(Vector2 startPoint)
+	{
+		selectionStartPoint = startPoint;
+		isDragging = true;
+	}
+
+	public void UpdateRectangleSelection(Vector2 currentPoint)
+	{
+		if (isDragging && selectionStartPoint.HasValue)
+		{
+			selectionRectangle = new Rectangle(
+				Math.Min(selectionStartPoint.Value.X, currentPoint.X),
+				Math.Min(selectionStartPoint.Value.Y, currentPoint.Y),
+				Math.Abs(currentPoint.X - selectionStartPoint.Value.X),
+				Math.Abs(currentPoint.Y - selectionStartPoint.Value.Y)
+			);
+
+			Raylib.DrawRectangleRec(selectionRectangle, new Color(255, 255, 255, 125)); // Semi-transparent rectangle
+		}
+	}
+
+	public void EndRectangleSelection()
+	{
+		if (isDragging)
+		{
+			foreach (var line in lines)
+			{
+				if (IsLineInsideRectangle(line, selectionRectangle))
+				{
+					line.Selected = true;
+				}
+			}
+			isDragging = false;
+			selectionStartPoint = null;
+		}
+	}
+
+	private bool IsLineInsideRectangle(Line line, Rectangle rectangle)
+	{
+		// Implement logic to check if the line is inside the rectangle
+		// ...
+		return true;
 	}
 }

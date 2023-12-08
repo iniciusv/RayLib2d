@@ -7,9 +7,6 @@ namespace RayLib2d.Drawing;
 public class Drawer
 {
 	public static List<Line> Lines { get; private set; } = new List<Line>();
-	public bool IsDrawing { get; set; } = false;
-	private Vector2? firstPoint = null;
-	static Vector2? LastProximityPoint = null;
 	private TrimLine trimLineTool;
 
 	private ShapeSelector shapeSelector; // Usando a nova classe ShapeSelector
@@ -49,6 +46,7 @@ public class Drawer
 		}
 		
 		shapeSelector.HandleLineSelection();
+		shapeSelector.ManageRectangleSelection();
 	}
 
 	private void DeleteSelectedLines() => Lines = Lines.Where(line => !line.Selected).ToList();
