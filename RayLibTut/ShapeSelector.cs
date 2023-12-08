@@ -12,15 +12,21 @@ public class ShapeSelector
 	private List<Line> lines;
 	public bool IsSelecting => isDragging;
 
+	private int clickCount = 0;
+	private float clickTimer = 0.0f;
+	private const float ClickTimeThreshold = 0.2f; // Tempo em segundos para considerar um clique
+
+
+
 	public ShapeSelector(List<Line> lines)
 	{
 		this.lines = lines;
 	}
-	public void ManageRectangleSelection()
+	public void ManageSelection()
 	{
-		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
+		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT))
 		{
-			if (!IsSelecting)
+			if (!isDragging)
 			{
 				StartRectangleSelection(InputHandler.MouseWorldPosition);
 			}
@@ -29,12 +35,30 @@ public class ShapeSelector
 				UpdateRectangleSelection(InputHandler.MouseWorldPosition);
 			}
 		}
-		else if (IsSelecting)
+		else if (isDragging)
 		{
 			EndRectangleSelection();
+			ResetClickTimer();
+		}
+		else
+		{
+			HandleLineSelection();
+		}
+	}
+	public void StartRectangleSelection(Vector2 startPoint)
+	{
+		if (Vector2.Distance(startPoint, InputHandler.MouseWorldPosition) >= ClickTimeThreshold)
+		{
+			selectionStartPoint = startPoint;
+			isDragging = true;
 		}
 	}
 
+	private void ResetClickTimer()
+	{
+		clickCount = 0;
+		clickTimer = 0.0f;
+	}
 	public void HandleLineSelection()
 	{
 		if ((InputHandler.LastKeyPressed == ' ' || InputHandler.LastKeyPressed == 'T') && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
@@ -49,11 +73,6 @@ public class ShapeSelector
 				}
 			}
 		}
-	}
-	public void StartRectangleSelection(Vector2 startPoint)
-	{
-		selectionStartPoint = startPoint;
-		isDragging = true;
 	}
 
 	public void UpdateRectangleSelection(Vector2 currentPoint)

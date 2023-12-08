@@ -8,7 +8,6 @@ public class Drawer
 {
 	public static List<Line> Lines { get; private set; } = new List<Line>();
 	private TrimLine trimLineTool;
-
 	private ShapeSelector shapeSelector; // Usando a nova classe ShapeSelector
 
 
@@ -44,9 +43,7 @@ public class Drawer
 			DeselectAllLines();
 			InputHandler.Reset = false;
 		}
-		
-		shapeSelector.HandleLineSelection();
-		shapeSelector.ManageRectangleSelection();
+		shapeSelector.ManageSelection();
 	}
 
 	private void DeleteSelectedLines() => Lines = Lines.Where(line => !line.Selected).ToList();
