@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 namespace RayLib2d;
 public class TrimLine
 {
+	public delegate void TrimOperationCompletedHandler();
+	public event TrimOperationCompletedHandler TrimOperationCompleted;
+
 	private Line referenceLine;
 	private Line lineToTrim;
 	private bool isWaitingForReferenceLine = true;
@@ -123,10 +126,9 @@ public class TrimLine
 
 	private void EndTrimOperation()
 	{
-		referenceLine = null;
-		lineToTrim = null;
-		isWaitingForReferenceLine = true;
 		DeselectAllLines();
+		InputHandler.LastKeyPressed = ' ';
+		TrimOperationCompleted?.Invoke();
 	}
 	public void DeselectAllLines() => Drawer.Lines.ForEach(line => line.Selected = false);
 }

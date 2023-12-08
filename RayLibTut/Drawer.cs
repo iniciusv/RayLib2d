@@ -24,10 +24,16 @@ public class Drawer
 
 	public void Update()
 	{
-		if (Raylib.IsKeyPressed(KeyboardKey.KEY_T)) 
-			trimLineTool ??= new TrimLine();
-		
-		Line.DrawAllLines(Lines);
+		if (Raylib.IsKeyPressed(KeyboardKey.KEY_T))
+		{
+			if (trimLineTool == null)
+			{
+				trimLineTool = new TrimLine();
+				trimLineTool.TrimOperationCompleted += OnTrimOperationCompleted;
+			}
+		}
+
+			Line.DrawAllLines(Lines);
 		trimLineTool?.Update();
 		HandleLineSelection();
 
@@ -44,7 +50,7 @@ public class Drawer
 
 	private void HandleLineSelection()
 	{
-		if ( Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+		if ((InputHandler.LastKeyPressed == ' ' || InputHandler.LastKeyPressed == 'T') && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
 		{
 			Vector2 clickPosition = InputHandler.MouseWorldPosition;
 			foreach (var line in Lines)
@@ -57,4 +63,5 @@ public class Drawer
 			}
 		}
 	}
+	private void OnTrimOperationCompleted() => trimLineTool = null;
 }
