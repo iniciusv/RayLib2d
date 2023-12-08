@@ -48,6 +48,8 @@ public class TrimLine
 		}
 	}
 
+
+
 	private bool LineSelected() => Drawer.Lines.Count(line => line.Selected) == 1;
 	private void DrawLinesIfExist()
 	{
