@@ -11,6 +11,8 @@ public class Drawer
 	private Vector2? firstPoint = null;
 	static Vector2? LastProximityPoint = null;
 	private TrimLine trimLineTool;
+	private RectangleSelector rectangleSelector;
+
 
 	public Drawer()
 	{
@@ -20,6 +22,7 @@ public class Drawer
 				new Line(new Vector2(0, 0), new Vector2(10, 10), 5, Color.BLUE), // linha do ponto (0,0) para (100,100)
 				new Line(new Vector2(10, 0), new Vector2(0, 10), 5, Color.BLUE)  // linha do ponto (100,0) para (0,100)
 			};
+		rectangleSelector = new RectangleSelector(Lines);
 	}
 
 	public void Update()
@@ -44,7 +47,9 @@ public class Drawer
 			DeselectAllLines();
 			InputHandler.Reset = false;
 		}
+		HandleRectangleSelection();
 	}
+
 	private void DeleteSelectedLines() => Lines = Lines.Where(line => !line.Selected).ToList();
 	public void DeselectAllLines() => Lines.ForEach(line => line.Selected = false);
 
@@ -64,4 +69,24 @@ public class Drawer
 		}
 	}
 	private void OnTrimOperationCompleted() => trimLineTool = null;
+	private void HandleRectangleSelection()
+	{
+		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
+		{
+			if (!rectangleSelector.IsSelecting)
+			{
+				rectangleSelector.StartSelection(InputHandler.MouseWorldPosition);
+			}
+			else
+			{
+				rectangleSelector.UpdateSelection(InputHandler.MouseWorldPosition);
+			}
+		}
+		else if (rectangleSelector.IsSelecting)
+		{
+			rectangleSelector.EndSelection();
+		}
+
+		rectangleSelector.DrawSelection();
+	}
 }

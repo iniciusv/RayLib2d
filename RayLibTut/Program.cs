@@ -49,7 +49,7 @@ static class Program
 	static void DisplaySelectedLinesCount()
 	{
 		int selectedLinesCount = Drawer.Lines.Count(line => line.Selected);
-		//Raylib.DrawText($"Linhas selecionadas: {selectedLinesCount}", 10, 80, 20, Color.WHITE);
+		Raylib.DrawText($"Linhas selecionadas: {selectedLinesCount}", 10, 80, 20, Color.WHITE);
 	}
 
 
