@@ -28,21 +28,22 @@ public class ShapeSelector
 		{
 			UpdateClickTimer();
 			Raylib.DrawText($"timer: {clickTimer}", 10, 80, 20, Color.WHITE);
-
+			HandleLineSelection(); // Chama HandleLineSelection se não estiver arrastando
+		}
+		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && clickTimer < 0.01f)
+		{
+			selectionStartPoint = InputHandler.MouseWorldPosition;
 		}
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && clickTimer > ClickTimeThreshold && InputHandler.LastKeyPressed == ' ')
 		{
 			UpdateRectangleSelection(InputHandler.MouseWorldPosition);
-			Raylib.DrawText($"AAAAAAAAAAAAAAA", 10, 100, 20, Color.WHITE);
+			Raylib.DrawText($"aa{selectionStartPoint}", 10, 100, 20, Color.WHITE);
+
 		}
-		if(Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT) && (clickTimer > ClickTimeThreshold))
+		if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT) && (clickTimer > ClickTimeThreshold))
 		{
 			ResetClickTimer();
-		}
-
-		else
-		{
-			HandleLineSelection(); // Chama HandleLineSelection se não estiver arrastando
+			EndRectangleSelection();
 		}
 	}
 
@@ -85,18 +86,16 @@ public class ShapeSelector
 
 	public void EndRectangleSelection()
 	{
-		if (isDragging)
+		foreach (var line in lines)
 		{
-			foreach (var line in lines)
+			if (IsLineInsideRectangle(line, selectionRectangle))
 			{
-				if (IsLineInsideRectangle(line, selectionRectangle))
-				{
-					line.Selected = true;
-				}
+				line.Selected = true;
 			}
-			isDragging = false;
-			selectionStartPoint = null;
 		}
+		isDragging = false;
+		selectionStartPoint = null;
+
 	}
 	private bool IsLineInsideRectangle(Line line, Rectangle selectionRectangle)
 	{
