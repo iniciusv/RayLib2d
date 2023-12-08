@@ -27,7 +27,6 @@ public class ShapeSelector
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && InputHandler.LastKeyPressed == ' ')
 		{
 			UpdateClickTimer();
-			Raylib.DrawText($"timer: {clickTimer}", 10, 80, 20, Color.WHITE);
 			HandleLineSelection(); // Chama HandleLineSelection se não estiver arrastando
 		}
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && clickTimer < 0.01f)
@@ -37,8 +36,6 @@ public class ShapeSelector
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && clickTimer > ClickTimeThreshold && InputHandler.LastKeyPressed == ' ')
 		{
 			UpdateRectangleSelection(InputHandler.MouseWorldPosition);
-			Raylib.DrawText($"aa{selectionStartPoint}", 10, 100, 20, Color.WHITE);
-
 		}
 		if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT) && (clickTimer > ClickTimeThreshold))
 		{
@@ -79,7 +76,6 @@ public class ShapeSelector
 				Math.Abs(currentPoint.X - selectionStartPoint.Value.X),
 				Math.Abs(currentPoint.Y - selectionStartPoint.Value.Y)
 			);
-
 			Raylib.DrawRectangleRec(selectionRectangle, new Color(255, 255, 255, 125)); // Semi-transparent rectangle
 		}
 	}
@@ -89,9 +85,7 @@ public class ShapeSelector
 		foreach (var line in lines)
 		{
 			if (IsLineInsideRectangle(line, selectionRectangle))
-			{
 				line.Selected = true;
-			}
 		}
 		isDragging = false;
 		selectionStartPoint = null;
@@ -102,7 +96,6 @@ public class ShapeSelector
 		return IsPointInsideRectangle(line.Vertices[0], selectionRectangle) &&
 			   IsPointInsideRectangle(line.Vertices[1], selectionRectangle);
 	}
-
 	private bool IsPointInsideRectangle(Vector2 point, Rectangle rectangle)
 	{
 		return point.X >= rectangle.x &&
