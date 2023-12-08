@@ -86,11 +86,17 @@ public class ShapeSelector
 			selectionStartPoint = null;
 		}
 	}
-
-	private bool IsLineInsideRectangle(Line line, Rectangle rectangle)
+	private bool IsLineInsideRectangle(Line line, Rectangle selectionRectangle)
 	{
-		// Implement logic to check if the line is inside the rectangle
-		// ...
-		return true;
+		return IsPointInsideRectangle(line.Vertices[0], selectionRectangle) &&
+			   IsPointInsideRectangle(line.Vertices[1], selectionRectangle);
+	}
+
+	private bool IsPointInsideRectangle(Vector2 point, Rectangle rectangle)
+	{
+		return point.X >= rectangle.x &&
+			   point.X <= rectangle.x + rectangle.width &&
+			   point.Y >= rectangle.y &&
+			   point.Y <= rectangle.y + rectangle.height;
 	}
 }
