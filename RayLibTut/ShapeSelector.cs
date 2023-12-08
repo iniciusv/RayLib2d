@@ -12,11 +12,11 @@ public class ShapeSelector
 	private List<Line> lines;
 	public bool IsSelecting => isDragging;
 
+	private float clickDistance = 1.0f;
+
 	private int clickCount = 0;
 	private float clickTimer = 0.0f;
 	private const float ClickTimeThreshold = 0.2f; // Tempo em segundos para considerar um clique
-
-
 
 	public ShapeSelector(List<Line> lines)
 	{
@@ -24,36 +24,29 @@ public class ShapeSelector
 	}
 	public void ManageSelection()
 	{
-		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT))
+		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && InputHandler.LastKeyPressed == ' ')
 		{
-			if (!isDragging)
-			{
-				StartRectangleSelection(InputHandler.MouseWorldPosition);
-			}
-			else
-			{
-				UpdateRectangleSelection(InputHandler.MouseWorldPosition);
-			}
+			UpdateClickTimer();
+			Raylib.DrawText($"timer: {clickTimer}", 10, 80, 20, Color.WHITE);
+
 		}
-		else if (isDragging)
+		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && clickTimer > ClickTimeThreshold && InputHandler.LastKeyPressed == ' ')
 		{
-			EndRectangleSelection();
+			UpdateRectangleSelection(InputHandler.MouseWorldPosition);
+			Raylib.DrawText($"AAAAAAAAAAAAAAA", 10, 100, 20, Color.WHITE);
+		}
+		if(Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT) && (clickTimer > ClickTimeThreshold))
+		{
 			ResetClickTimer();
 		}
+
 		else
 		{
-			HandleLineSelection();
-		}
-	}
-	public void StartRectangleSelection(Vector2 startPoint)
-	{
-		if (Vector2.Distance(startPoint, InputHandler.MouseWorldPosition) >= ClickTimeThreshold)
-		{
-			selectionStartPoint = startPoint;
-			isDragging = true;
+			HandleLineSelection(); // Chama HandleLineSelection se não estiver arrastando
 		}
 	}
 
+	private void UpdateClickTimer() => clickTimer += Raylib.GetFrameTime();
 	private void ResetClickTimer()
 	{
 		clickCount = 0;
@@ -77,7 +70,7 @@ public class ShapeSelector
 
 	public void UpdateRectangleSelection(Vector2 currentPoint)
 	{
-		if (isDragging && selectionStartPoint.HasValue)
+		if (selectionStartPoint.HasValue)
 		{
 			selectionRectangle = new Rectangle(
 				Math.Min(selectionStartPoint.Value.X, currentPoint.X),
