@@ -10,9 +10,8 @@ public class ShapeSelector
 	private bool isDragging = false;
 	private Rectangle selectionRectangle;
 	private List<Line> lines;
-	public bool IsSelecting => isDragging;
 
-	private float clickDistance = 1.0f;
+
 
 	private int clickCount = 0;
 	private float clickTimer = 0.0f;
@@ -26,7 +25,7 @@ public class ShapeSelector
 	{
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && InputHandler.LastKeyPressed == ' ')
 		{
-			UpdateClickTimer();
+			clickTimer += Raylib.GetFrameTime();
 			HandleLineSelection(); // Chama HandleLineSelection se não estiver arrastando
 		}
 		if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && clickTimer < 0.01f)
@@ -43,8 +42,6 @@ public class ShapeSelector
 			EndRectangleSelection();
 		}
 	}
-
-	private void UpdateClickTimer() => clickTimer += Raylib.GetFrameTime();
 	private void ResetClickTimer()
 	{
 		clickCount = 0;
